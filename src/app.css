@@ -1,0 +1,189 @@
+@import "tailwindcss";
+@import "@fontsource-variable/vazirmatn";
+@import "@fontsource-variable/inter";
+@custom-variant dark (&:where(.dark, .dark *));
+@theme {
+  --radius-md: 8px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --font-sans: "Vazirmatn Variable", "Inter Variable", sans-serif;
+  --color-midnight: #130f40;
+  --color-violet: #5b2a86;
+  --color-magenta: #c724b1;
+  --color-orchid: #ff7ee3;
+  --color-background: #faf8fc;
+  --color-foreground: #201729;
+  --color-card: #ffffff;
+  --color-card-foreground: #201729;
+  --color-primary: #5b2a86;
+  --color-primary-foreground: #fff;
+  --color-muted-foreground: #6e6275;
+  --color-border: #e0d8e5;
+  --color-input: #b7a8c1;
+  --color-destructive: #a12743;
+  --color-ring: #a64099;
+  --color-accent: #ede5f1;
+  --color-accent-foreground: #392442;
+}
+.dark {
+  color-scheme: dark;
+  --color-background: #0b090e;
+  --color-foreground: #faf7fc;
+  --color-card: #1a161e;
+  --color-card-foreground: #faf7fc;
+  --color-primary: #f3e6f5;
+  --color-primary-foreground: #211625;
+  --color-muted-foreground: #afa4b4;
+  --color-border: #322b37;
+  --color-input: #756579;
+  --color-destructive: #ff9eaf;
+  --color-ring: var(--color-orchid);
+  --color-accent: #312439;
+  --color-accent-foreground: #fae6f7;
+}
+#root {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 3vw, 24px);
+}
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; }
+}
+.login-layout {
+  direction: ltr;
+  min-height: min(552px, calc(100svh - 112px));
+  width: 100%;
+  padding: min(var(--panel-spacing), 6vw);
+  border: 1px solid var(--color-border);
+  border-radius: var(--frame-radius);
+  background: var(--color-card);
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+
+}
+.night-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  border-radius: max(0px, calc(var(--frame-radius) - 8px));
+  padding: 24px;
+}
+.night-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  isolation: isolate;
+  filter: brightness(.75) saturate(.75);
+  background: radial-gradient(ellipse at 15% 0%, #a377cf, transparent 52%),
+    linear-gradient(168deg, var(--color-violet), var(--color-midnight) 47%, #100d18 78%);
+}
+.aurora {
+  position: absolute;
+  inset: -24% -42% 26%;
+  z-index: -1;
+  transform: rotate(-21deg);
+  border-radius: 46%;
+  background: radial-gradient(ellipse at 76% 65%, var(--color-orchid), transparent 34%),
+    radial-gradient(ellipse at 62% 82%, var(--color-magenta), transparent 44%),
+    linear-gradient(145deg, #18113e 18%, #6740a6 55%, #b868e7 87%);
+  box-shadow: inset -10px -16px 40px #e6a1ffad, 0 14px 48px #a84fd085, 0 40px 100px #71368b78;
+  filter: blur(var(--aurora-blur));
+}
+.night-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .075;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' d='M0 0h150v150H0z'/%3E%3C/svg%3E");
+}
+.login-pane { display: grid; place-items: center; padding: 40px 32px; }
+.login-content { width: min(100%, var(--form-width)); }
+.theme-switch { width: 40px; height: 40px; align-self: start; margin-block-start: 4px; color: var(--color-muted-foreground); }
+.dashboard-mark { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #ffffff40; border-radius: var(--radius-md); color: #f3e6f5; background: #130f4066; }
+.login-input { height: 48px; background: var(--color-background); }
+@media (max-width: 768px) {
+  .login-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; min-height: auto; }
+  .night-panel { min-height: var(--mobile-panel-height); padding: 16px; }
+  .login-pane { padding: 32px 16px 24px; align-items: start; }
+}
+
+
+
+
+.style-controls {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-card);
+  font-size: .8125rem;
+}
+.style-controls summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding-inline: 16px;
+  cursor: pointer;
+  list-style: none;
+}
+.style-controls-fields {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  padding: 8px 16px 16px;
+}
+.style-controls-fields output { float: left; direction: ltr; }
+.style-controls-fields input[type="range"] { display: block; width: 100%; accent-color: var(--color-primary); }
+.style-color { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+.login-page {
+  width: min(100%, var(--frame-width));
+  align-self: start;
+  display: grid;
+  gap: 16px;
+}
+.login-form {
+  display: grid;
+  gap: var(--form-gap);
+}
+.style-controls summary::-webkit-details-marker { display: none; }
+.style-controls summary::after {
+  content: "+";
+  margin-inline-start: auto;
+  color: var(--color-muted-foreground);
+}
+.style-controls[open] summary::after { content: "−"; }
+
+.login-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+}
+.style-controls summary {
+  border-radius: inherit;
+  font-weight: 500;
+}
+.style-controls summary:hover { background: var(--color-accent); }
+.style-controls summary:focus-visible,
+.style-controls input:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+.login-input:hover:not(:focus-visible):not(:user-invalid) {
+  border-color: var(--color-muted-foreground);
+}
+.login-input:user-invalid { border-color: var(--color-destructive); }
+.login-submit:active:not(:disabled) { opacity: .86; }
+.login-feedback {
+  color: var(--color-destructive);
+  font-size: .875rem;
+  line-height: 1.5;
+}
+.login-toolbar > .style-controls { grid-column: 1; grid-row: 1; min-width: 0; }
+.login-toolbar > .theme-switch { grid-column: 2; grid-row: 1; }
