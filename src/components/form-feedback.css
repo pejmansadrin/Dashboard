@@ -1,0 +1,16 @@
+.form-feedback-motion {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-block-start: calc(-1 * var(--form-feedback-gap, 0px));
+  opacity: 0;
+  transition: grid-template-rows var(--motion-layout) var(--ease-ui), margin-block-start var(--motion-layout) var(--ease-ui), opacity var(--motion-fade) var(--ease-ui);
+}
+.form-feedback-motion[data-open="true"] {
+  grid-template-rows: 1fr;
+  margin-block-start: 0;
+  opacity: 1;
+}
+.form-feedback-clip { min-height: 0; overflow: hidden; }
+@media (prefers-reduced-motion: reduce) {
+  .form-feedback-motion { transition: none; }
+}
