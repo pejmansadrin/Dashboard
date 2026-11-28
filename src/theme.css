@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./workspace-colors.css";
 @import "@fontsource-variable/vazirmatn";
 @import "@fontsource-variable/inter";
 @custom-variant dark (&:where(.dark, .dark *));
@@ -20,9 +21,10 @@
   --color-violet: #5b2a86;
   --color-magenta: #c724b1;
   --color-orchid: #ff7ee3;
-  --color-background: #faf8fc;
+  --color-background: #f7f4ee;
   --color-foreground: #201729;
-  --color-card: #ffffff;
+  --color-card: #fdfaf4;
+  --color-header: #f2ede6;
   --color-card-foreground: #201729;
   --color-popover: var(--color-card);
   --color-popover-foreground: var(--color-card-foreground);
@@ -40,6 +42,7 @@
 }
 .dark {
   color-scheme: dark;
+  --color-header: #202125;
   --shadow-floating: 0 0 8px rgb(0 0 0 / 42%), 0 10px 28px -4px rgb(0 0 0 / 52%);
   --color-background: #0b090e;
   --color-foreground: #faf7fc;
@@ -56,32 +59,43 @@
   --color-accent: #312439;
   --color-accent-foreground: #fae6f7;
 }
-/* The workspace and its portalled shadcn controls share the same surface scale. */
 html:has(.dashboard-shell) {
-  --color-background: #fafafa;
-  --color-card: #ffffff;
-  --color-foreground: #202124;
-  --color-card-foreground: var(--color-foreground);
-  --color-border: #dedee1;
-  --color-input: #acaeb4;
-  --color-muted: #eeeef0;
-  --color-muted-foreground: #606167;
-  --color-accent: #ecebef;
-  --color-accent-foreground: var(--color-foreground);
-}
-html.dark:has(.dashboard-shell) {
-  --color-background: #121314;
-  --color-card: #191a1c;
-  --color-foreground: #f2f2f4;
-  --color-border: #303135;
-  --color-input: #606169;
-  --color-muted: #26272b;
-  --color-muted-foreground: #abaeb5;
-  --color-accent: #25252a;
+  --color-background: var(--workspace-background);
+  --color-card: var(--workspace-card);
+  --color-foreground: var(--workspace-foreground);
+  --color-card-foreground: var(--workspace-card-foreground);
+  --color-border: var(--workspace-border);
+  --color-input: var(--workspace-input);
+  --color-muted: var(--workspace-muted);
+  --color-muted-foreground: var(--workspace-muted-foreground);
+  --color-accent: var(--workspace-accent);
+  --color-accent-foreground: var(--workspace-accent-foreground);
 }
 @layer base {
   * { @apply border-border; }
   body { @apply bg-background text-foreground; }
+}
+
+@media (forced-colors: none) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-muted-foreground) 60%, var(--color-background)) transparent;
+  }
+}
+
+[data-slot="switch"],
+[data-slot="switch-thumb"] {
+  transition-duration: var(--motion-layout);
+  transition-timing-function: var(--ease-ui);
+}
+[data-slot="switch"] {
+  transition-property: background-color, border-color, box-shadow;
+}
+[data-slot="switch-thumb"] {
+  transition-property: translate, background-color;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="switch"], [data-slot="switch-thumb"] { transition: none; }
 }
 
 [data-slot="native-select"]:dir(rtl) {

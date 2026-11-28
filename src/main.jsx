@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react"
+import { PreviewMark } from "./components/preview-mark"
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react"
 import { createRoot } from "react-dom/client"
 import { Eye, EyeOff, Moon, SlidersHorizontal, Sun } from "lucide-react"
-import { DashboardHome } from "./components/dashboard-home"
+import { DashboardSkeleton } from "./components/dashboard-skeleton"
 import { Button } from "./components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog"
 import { FormFeedback } from "./components/form-feedback"
@@ -18,6 +19,8 @@ import { Label } from "./components/ui/label"
 import { version } from "../package.json"
 import zilberLogo from "./assets/zilber.svg"
 import "./app.css"
+
+const DashboardHome = lazy(() => import("./components/dashboard-home").then(module => ({ default: module.DashboardHome })))
 
 function applyTheme() {
   const stored = localStorage.getItem("theme")
@@ -86,7 +89,7 @@ function StyleControls({ styles, onChange, scenario, onScenarioChange, onPreview
             <Button type="button" variant="outline" size="sm" className="w-fit px-4" onClick={() => onChange(styleDefaults)}>بازنشانی</Button>
           </div>
           <Field className="gap-2">
-            <FieldLabel htmlFor="login-scenario">شبیه‌سازی نتیجهٔ ورود</FieldLabel>
+            <FieldLabel htmlFor="login-scenario">شبیه‌سازی نتیجهٔ ورود <PreviewMark /></FieldLabel>
             <NativeSelect id="login-scenario" value={scenario} onChange={event => onScenarioChange(event.target.value)}>
               <NativeSelectOption value="default">رفتار فعلی</NativeSelectOption>
               <NativeSelectOption value="wrong-password">رمز عبور اشتباه</NativeSelectOption>
@@ -126,8 +129,7 @@ function ThemeSwitch({ dark, onToggle }) {
 function DashboardApp() {
   const formRef = useRef(null)
   const headingRef = useRef(null)
-  const hasOpenedDashboard = useRef(false)
-  const [screen, setScreen] = useState("login")
+  const screen = window.location.pathname === "/workspace" ? "dashboard" : "login"
   const isDashboard = import.meta.env.DEV && screen === "dashboard"
   const [styles, setStyles] = useState(import.meta.env.DEV ? readStyles : styleDefaults)
   const [{ dark, mode: themeMode }, setAppearance] = useState(applyTheme)
@@ -154,17 +156,12 @@ function DashboardApp() {
   }, [])
 
   useEffect(() => {
-    if (isDashboard) hasOpenedDashboard.current = true
-    if (hasOpenedDashboard.current) headingRef.current?.focus()
-  }, [isDashboard])
-
-  useEffect(() => {
     if (!completingLogin) return
 
     const timer = window.setTimeout(() => {
       setShowResult(false)
       setVisible(false)
-      setScreen("dashboard")
+      window.location.assign("/dashboard/")
     }, loginTransitionDelay)
 
     return () => window.clearTimeout(timer)
@@ -182,7 +179,7 @@ function DashboardApp() {
   function switchPreview() {
     setShowResult(false)
     setVisible(false)
-    setScreen(isDashboard ? "login" : "dashboard")
+    window.location.assign(isDashboard ? "/" : "/dashboard/")
   }
 
   function runPreviewLogin() {
@@ -225,8 +222,10 @@ function DashboardApp() {
     <div className={isDashboard ? "dashboard-preview" : "login-page"} style={frameStyle}>
       {!isDashboard && <header className="login-toolbar" aria-label="تنظیمات نمایش">{previewControls}</header>}
       {isDashboard ? (
-        <DashboardHome companyName={companyName} version={version} onExit={switchPreview} headingRef={headingRef} previewControls={previewControls}
-          dark={dark} onToggleTheme={toggleTheme} themeMode={themeMode} onThemeChange={changeTheme} />
+        <Suspense fallback={<DashboardSkeleton />}>
+          <DashboardHome companyName={companyName} version={version} onExit={switchPreview} headingRef={headingRef} previewControls={previewControls}
+            dark={dark} onToggleTheme={toggleTheme} themeMode={themeMode} onThemeChange={changeTheme} />
+        </Suspense>
       ) : (
         <main className="login-layout">
           <div className="night-art" aria-hidden="true"><div className="aurora" /></div>
@@ -247,7 +246,7 @@ function DashboardApp() {
           <Card className="login-pane gap-0 py-0 shadow-none" dir="rtl" role="region" aria-labelledby="login-title">
             <CardContent className="login-content px-0">
               <CardHeader className="relative -top-2 mb-8 gap-3 px-0">
-                <CardTitle><h1 ref={headingRef} id="login-title" tabIndex={-1} className="text-center text-2xl leading-8 font-bold outline-none">ورود به داشبورد{companyName && <> <bdi dir="auto">{companyName}</bdi></>}</h1></CardTitle>
+                <CardTitle><h1 ref={headingRef} id="login-title" tabIndex={-1} className="text-center text-2xl leading-8 font-bold outline-none">ورود به داشبورد{companyName && <> <bdi dir="auto">{companyName}</bdi></>} <PreviewMark /></h1></CardTitle>
                 <Separator className="bg-divider" />
               </CardHeader>
               <form ref={formRef} className="login-form" aria-busy={pending} onChange={() => { if (!completingLogin) setShowResult(false) }} onSubmit={event => {
@@ -279,11 +278,11 @@ function DashboardApp() {
                     <span className="text-muted-foreground">رمز عبور خود را فراموش کرده‌اید؟</span>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button type="button" variant="link" size="sm" className="h-auto px-0 py-1 text-xs underline underline-offset-4">فراموشی رمز عبور</Button>
+                        <Button type="button" variant="link" size="sm" className="h-auto px-0 py-1 text-xs underline underline-offset-4">فراموشی رمز عبور <PreviewMark /></Button>
                       </DialogTrigger>
                       <DialogContent dir="rtl" className="rounded-logo text-right [&>button]:right-auto [&>button]:left-4">
                         <DialogHeader className="pe-8 text-right sm:text-right">
-                          <DialogTitle>بازیابی رمز عبور</DialogTitle>
+                          <DialogTitle>بازیابی رمز عبور <PreviewMark /></DialogTitle>
                           <DialogDescription>بازیابی آنلاین هنوز فعال نیست. برای بازنشانی رمز عبور، با مدیر سامانه تماس بگیرید.</DialogDescription>
                         </DialogHeader>
                       </DialogContent>
